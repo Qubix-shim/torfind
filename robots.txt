@@ -1,0 +1,9 @@
+TOR FIND/ CLEAN FIND
+we are here to help
+
+# *
+User-agent: *
+Disallow:
+
+# Host
+Host: torfind

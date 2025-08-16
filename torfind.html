@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Torfind — Modern Tor Search</title>
+  <style>
+    :root {
+      --bg: #0d0e12;
+      --surface: #1b1c22cc;
+      --text: #f5f6fa;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --border: #2a2b31;
+      --radius: 16px;
+    }
+    .light {
+      --bg: #f3f4f6;
+      --surface: #ffffffcc;
+      --text: #111827;
+      --accent: #4f46e5;
+      --accent-hover: #3730a3;
+      --border: #d1d5db;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Square gradient background */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vmax;
+      height: 100vmax;
+      background: linear-gradient(135deg, #6366f1, #ec4899, #06b6d4);
+      transform: translate(-50%, -50%) rotate(25deg);
+      z-index: -2;
+      filter: blur(200px) opacity(0.7);
+    }
+
+    /* Glassmorphic card */
+    .card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      backdrop-filter: blur(20px) saturate(150%);
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 48px;
+      margin: 0;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    header .tagline {
+      margin-top: 12px;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .searchbox {
+      margin-top: 28px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: all 0.3s ease;
+    }
+    .searchbox:focus-within {
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .searchbox input {
+      flex: 1;
+      padding: 18px 22px;
+      border: none;
+      outline: none;
+      font-size: 18px;
+      background: transparent;
+      color: var(--text);
+    }
+    .searchbox button {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 16px 26px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.25s;
+      font-size: 16px;
+    }
+    .searchbox button:hover {
+      background: var(--accent-hover);
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    .controls { margin-top: 24px; }
+    .toggle {
+      cursor: pointer;
+      font-size: 14px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: inline-block;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+    .toggle:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    footer {
+      margin-top: 28px;
+      font-size: 14px;
+      opacity: .85;
+    }
+
+    @media(max-width:600px) {
+      header h1 { font-size: 34px; }
+      .searchbox input { font-size: 16px; }
+      .searchbox button { font-size: 14px; padding: 14px 20px; }
+      .card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <h1>Torfind</h1>
+      <div class="tagline">🔒 No tracking &nbsp; 🕵️ Anonymous &nbsp; 👪 Family-friendly</div>
+    </header>
+
+    <form id="searchForm" autocomplete="off" class="searchbox">
+      <input id="q" type="text" placeholder="Search the Tor network..." />
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="badges">
+      <div class="badge">🔍 Discover Hidden Services</div>
+      <div class="badge">⚠️ We do not store any data</div>
+      <div class="badge">📜 Not liable for content</div>
+    </div>
+
+    <div class="controls">
+      <div class="toggle" id="modeToggle">Toggle light/dark</div>
+    </div>
+
+    <footer>
+      Discover Hidden Services and access to Tor's onion sites. We do not store any data and are not liable for the content.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const stored = localStorage.getItem('torfind_mode');
+  if(stored === 'light') document.documentElement.classList.add('light');
+
+  document.getElementById('modeToggle').addEventListener('click', ()=>{
+    const isLight = document.documentElement.classList.toggle('light');
+    localStorage.setItem('torfind_mode', isLight ? 'light' : 'dark');
+  });
+
+  const form = document.getElementById('searchForm');
+  const input = document.getElementById('q');
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const q = input.value.trim();
+    if(!q) return;
+    const newWin = window.open('about:blank', 'TorfindResults');
+    try{
+      newWin.location.href = 'https://onionland.io/search?q=' + encodeURIComponent(q);
+    }catch(err){
+      newWin.location.assign('https://onionland.io/search?q=' + encodeURIComponent(q));
+    }
+  });
+
+  input.focus();
+})();
+</script>
+</body>
+</html>
