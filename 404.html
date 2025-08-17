@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TorFind 404</title>
+<style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+  body {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    padding: 20px;
+  }
+
+  /* Animated background circles */
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.12;
+    animation: float linear infinite, rotateScale linear infinite, flicker linear infinite;
+    will-change: transform, background, opacity;
+    filter: blur(12px);
+    pointer-events: none;
+  }
+
+  /* Trails effect */
+  .bg-circle::after {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.15;
+    filter: blur(24px);
+  }
+
+  /* Different shapes with varying sizes and speeds */
+  .bg-circle:nth-child(1) { width: 200px; height: 200px; top: 10%; left: 15%; animation-duration: 25s, 40s, 6s; }
+  .bg-circle:nth-child(2) { width: 300px; height: 300px; top: 60%; left: 70%; animation-duration: 35s, 50s, 7s; }
+  .bg-circle:nth-child(3) { width: 150px; height: 150px; top: 40%; left: 30%; animation-duration: 30s, 45s, 5.5s; }
+  .bg-circle:nth-child(4) { width: 100px; height: 100px; top: 20%; left: 60%; animation-duration: 28s, 38s, 6.5s; }
+  .bg-circle:nth-child(5) { width: 250px; height: 250px; top: 70%; left: 20%; animation-duration: 40s, 55s, 6.8s; }
+  .bg-circle:nth-child(6) { width: 180px; height: 180px; top: 50%; left: 50%; animation-duration: 32s, 48s, 5.8s; }
+
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-30px) translateX(20px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+
+  @keyframes rotateScale {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(5deg) scale(1.05); }
+    50% { transform: rotate(0deg) scale(1); }
+    75% { transform: rotate(-5deg) scale(0.95); }
+  }
+
+  @keyframes flicker {
+    0%,100% { opacity: 0.12; }
+    25% { opacity: 0.18; }
+    50% { opacity: 0.1; }
+    75% { opacity: 0.15; }
+  }
+
+  @keyframes colorShiftLight {
+    0%,100% { background: radial-gradient(circle, rgba(245,128,37,0.5), transparent); }
+    50% { background: radial-gradient(circle, rgba(255,180,80,0.5), transparent); }
+  }
+
+  @keyframes colorShiftDark {
+    0%,100% { background: radial-gradient(circle, rgba(255,180,80,0.6), transparent); }
+    50% { background: radial-gradient(circle, rgba(245,128,37,0.6), transparent); }
+  }
+
+  .container { position: relative; max-width: 600px; text-align: center; z-index: 2; }
+  .logo { font-size: 4.5rem; font-weight: bold; margin-bottom: 20px; color: #f58025; animation: pulse 2s infinite; }
+  h1 { font-size: 2.8rem; margin-bottom: 15px; }
+  p { font-size: 1.2rem; margin-bottom: 30px; line-height: 1.5; color: inherit; }
+  a.button { display: inline-block; padding: 12px 30px; background: #f58025; color: #fff; font-weight: bold; border-radius: 50px; text-decoration: none; transition: 0.3s; }
+  a.button:hover { background: #ff944d; transform: scale(1.05); }
+
+  .toggle-btn {
+    position: fixed; top: 20px; right: 20px; background: transparent; border: 2px solid #f58025;
+    color: #f58025; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold;
+    font-size: 1rem; transition: transform 0.3s, color 0.3s, background 0.3s, box-shadow 0.5s; z-index: 3;
+  }
+
+  .toggle-btn:hover { transform: scale(1.2) rotate(15deg); color: #fff; background: #f58025; }
+  .toggle-btn.glow { animation: glowPulse 4s ease-in-out infinite alternate; }
+
+  @keyframes glowPulse { 0% { box-shadow: 0 0 10px 2px var(--glow-color); } 50% { box-shadow: 0 0 22px 6px var(--glow-color); } 100% { box-shadow: 0 0 10px 2px var(--glow-color); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+  body.light {
+    --glow-color: rgba(245, 128, 37, 0.5);
+    background: linear-gradient(135deg, #fff9f0, #ffe6cc);
+    color: #1a1a1a;
+  }
+  body.light .logo { color: #f58025; }
+  body.light a.button { background: #f58025; color: #fff; }
+  body.light a.button:hover { background: #ff944d; }
+  body.light .toggle-btn { border-color: #f58025; color: #f58025; }
+  body.light .toggle-btn:hover { background: #f58025; color: #fff; }
+  body.light .bg-circle { animation-name: float, rotateScale, flicker, colorShiftLight; }
+
+  body.dark {
+    --glow-color: rgba(255, 180, 80, 0.6);
+    background: linear-gradient(135deg, #1a1a1a, #3a3a3a);
+    color: #fff;
+  }
+  body.dark .bg-circle { animation-name: float, rotateScale, flicker, colorShiftDark; }
+
+</style>
+</head>
+<body>
+  <!-- Animated background circles -->
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+
+  <button class="toggle-btn glow" id="themeToggle">🌙</button>
+
+  <div class="container">
+    <div class="logo">🕵️‍♂️ TorFind</div>
+    <h1>404 - Page Not Found</h1>
+    <p>Hmm… the page you are looking for doesn’t exist. Maybe it was hidden or removed.</p>
+    <a href="index.html" class="button">Go Back Home</a>
+  </div>
+
+  <script>
+    const body = document.body;
+    const toggleBtn = document.getElementById('themeToggle');
+    const circles = document.querySelectorAll('.bg-circle');
+
+    function updateToggleIcon() {
+      toggleBtn.textContent = body.classList.contains('dark') ? '🌙' : '☀️';
+    }
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    body.classList.add(prefersDark ? 'dark' : 'light');
+    updateToggleIcon();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('torfind-mode')) {
+        body.classList.toggle('dark', e.matches);
+        body.classList.toggle('light', !e.matches);
+        updateToggleIcon();
+      }
+    });
+
+    toggleBtn.addEventListener('click', () => {
+      if (body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        localStorage.setItem('torfind-mode', 'light');
+      } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        localStorage.setItem('torfind-mode', 'dark');
+      }
+      updateToggleIcon();
+    });
+
+    const savedMode = localStorage.getItem('torfind-mode');
+    if (savedMode) {
+      body.classList.remove('dark', 'light');
+      body.classList.add(savedMode);
+      updateToggleIcon();
+    }
+
+    // Parallax effect for floating shapes
+    document.addEventListener('mousemove', e => {
+      const x = e.clientX / window.innerWidth - 0.5;
+      const y = e.clientY / window.innerHeight - 0.5;
+      circles.forEach((circle, i) => {
+        const speed = (i + 1) * 5;
+        circle.style.transform = `translate(${x * speed}px, ${y * speed}px) rotate(${x * speed * 2}deg) scale(${1 + y * 0.05})`;
+      });
+    });
+  </script>
+</body>
+</html>

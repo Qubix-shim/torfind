@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TorFind</title>
+  <style>
+    :root {
+      --bg-light: #ffffff;
+      --bg-dark: #0d0d0d;
+      --text-light: #111;
+      --text-dark: #f9f9f9;
+      --accent: #ff6f61;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      overflow: hidden;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    body.light {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      z-index: 2;
+    }
+
+    .tagline {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-bottom: 25px;
+      z-index: 2;
+    }
+
+    /* 🔍 Semi-transparent search box */
+    .search-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50px;
+      padding: 12px 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 2;
+      width: 600px;
+      max-width: 90%;
+    }
+
+    body.light .search-container {
+      background: rgba(0,0,0,0.08);
+    }
+
+    input {
+      border: none;
+      outline: none;
+      padding: 18px 20px;
+      border-radius: 40px;
+      font-size: 1.3rem;
+      width: 100%;
+      background: transparent;
+      color: inherit;
+    }
+
+    button.search-btn {
+      border: none;
+      cursor: pointer;
+      padding: 14px 28px;
+      border-radius: 35px;
+      margin-left: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      transition: 0.3s;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    button.search-btn:hover { opacity: 0.85; }
+
+    /* 🌙 small toggle buttons */
+    .toggle {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .toggle button {
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      color: inherit;
+      cursor: pointer;
+      transition: 0.3s;
+      backdrop-filter: blur(6px);
+    }
+
+    .toggle button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    body.light .toggle button {
+      background: rgba(0,0,0,0.1);
+    }
+    body.light .toggle button:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    /* 🌐 Gradient background bubbles */
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.25;
+      pointer-events: none;
+      transition: transform 0.2s ease-out;
+    }
+
+    .shape1 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #ff5a5a, transparent);
+      top: 10%;
+      left: 10%;
+    }
+    .shape2 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, #5a78ff, transparent);
+      bottom: 15%;
+      right: 15%;
+    }
+    .shape3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #5aff7e, transparent);
+      top: 50%;
+      left: 60%;
+    }
+
+    /* 📌 Semi-transparent Brave-style footer */
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 0.8rem;
+      padding: 8px 18px;
+      border-radius: 20px 20px 0 0;
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      max-width: 90%;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+      z-index: 2;
+    }
+
+    body.light footer {
+      background: rgba(255,255,255,0.4);
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="shape shape1"></div>
+  <div class="shape shape2"></div>
+  <div class="shape shape3"></div>
+
+  <h1>TorFind</h1>
+  <div class="tagline">No tracking • Anonymous • Useful</div>
+
+  <div class="search-container">
+    <input type="text" id="query" placeholder="Search Onions or Clearnet">
+    <button class="search-btn" onclick="search()">Search</button>
+  </div>
+
+  <div class="toggle">
+    <button onclick="toggleMode()">🌙 / ☀️</button>
+    <button onclick="toggleEngine()">Darkweb</button>
+  </div>
+
+  <footer>
+    Discover Hidden Services and access to Tor's onion sites ·  
+    We do not store any data and are not liable for the content.
+  </footer>
+
+  <script>
+    let darkMode = true;
+    let engine = "darkweb"; 
+
+    function toggleMode() {
+      document.body.classList.toggle("light");
+      darkMode = !darkMode;
+    }
+
+    function toggleEngine() {
+      if (engine === "darkweb") {
+        engine = "clearnet";
+        document.querySelector(".toggle button:last-child").innerText = "Clearnet";
+      } else {
+        engine = "darkweb";
+        document.querySelector(".toggle button:last-child").innerText = "Darkweb";
+      }
+    }
+
+    function search() {
+      const query = document.getElementById("query").value.trim();
+      if (!query) return;
+      let url = "";
+      if (engine === "darkweb") {
+        url = "https://onionland.io/search?q=" + encodeURIComponent(query);
+      } else {
+        url = "https://www.metacrawler.com/serp?q=" + encodeURIComponent(query);
+      }
+      let newWin = window.open("about:blank");
+      newWin.document.write("<iframe style='border:none;width:100%;height:100%' src='" + url + "'></iframe>");
+    }
+
+    document.getElementById("query").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") search();
+    });
+
+    const shapes = document.querySelectorAll(".shape");
+    document.addEventListener("mousemove", (e) => {
+      let x = (e.clientX / window.innerWidth - 0.5) * 50;
+      let y = (e.clientY / window.innerHeight - 0.5) * 50;
+      shapes.forEach((shape, i) => {
+        const speed = (i + 1) * 10;
+        shape.style.transform = `translate(${x / speed * 20}px, ${y / speed * 20}px)`;
+      });
+    });
+  </script>
+</body>
+</html>
+
