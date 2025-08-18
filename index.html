@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>torfind — Search</title>
+  <style>
+    :root{
+      --bg:#fff; --fg:#222; --muted:#8b8b9a; --accent:#c6e0ff; --pill:#f3f6fb;
+    }
+    [data-theme="dark"]{ --bg:#0f0f10; --fg:#e9e6e9; --muted:#9a94a6; --accent:rgba(255,255,255,0.06); --pill:#1a1a1b }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--fg)}
+    body.has-wallpaper{background-size:cover;background-position:center;background-attachment:fixed}
+
+    .bg-tiles{position:fixed;inset:0;pointer-events:none;display:block}
+    .tile{position:absolute;right:-6%;top:6%;width:70vw;height:70vh;border-radius:24px;transform:rotate(-12deg);opacity:.06;background:linear-gradient(90deg,#ffdede,#fff2e6)}
+    [data-theme="dark"] .tile{background:linear-gradient(90deg,#4b1336,#22120e);opacity:.08}
+
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px}
+    .card{width:88%;max-width:1100px;text-align:center}
+
+    .quote{font-size:120px;line-height:0;margin:0;color:var(--fg);opacity:.98;font-weight:800}
+    .title{font-size:64px;margin:6px 0 30px;font-weight:800;letter-spacing:1px}
+
+    .search-row{display:flex;align-items:center;justify-content:center}
+    .search{display:flex;align-items:center;width:100%;max-width:900px;background:var(--pill);border-radius:48px;padding:18px 24px;border:4px solid transparent;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    [data-theme="dark"] .search{box-shadow:none}
+    .search input{flex:1;border:0;background:transparent;padding:8px 14px;font-size:18px;color:var(--fg);outline:none}
+    .search .icon{width:22px;height:22px;margin-right:12px;opacity:.9}
+    .search .btn{background:transparent;border:0;font-size:20px;cursor:pointer;color:var(--muted)}
+
+    .features{display:flex;gap:28px;justify-content:center;margin-top:26px;color:var(--muted);align-items:center}
+    .feature{display:flex;align-items:center;gap:10px}
+
+    .descr{color:var(--muted);max-width:700px;margin:28px auto 0}
+
+    .theme-toggle{position:fixed;right:20px;top:18px;background:transparent;border:1px solid rgba(0,0,0,.06);padding:8px 12px;border-radius:12px;cursor:pointer}
+    [data-theme="dark"] .theme-toggle{border-color:rgba(255,255,255,.06)}
+
+    .settings{position:fixed;left:20px;top:18px;background:transparent;border:1px solid rgba(0,0,0,.06);padding:8px 12px;border-radius:12px;cursor:pointer}
+    [data-theme="dark"] .settings{border-color:rgba(255,255,255,.06)}
+
+    .settings-panel{display:none;position:fixed;top:60px;left:20px;background:var(--bg);border:1px solid var(--muted);padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:1000}
+    .settings-panel label{display:block;margin:8px 0;color:var(--fg)}
+    .settings-panel input[type="file"]{margin:6px 0}
+
+    @media (max-width:640px){.quote{font-size:72px}.title{font-size:36px}.search{padding:12px;border-radius:32px}}
+  </style>
+</head>
+<body data-theme="light">
+  <button class="theme-toggle" id="themeBtn">Switch to Dark</button>
+  <button class="settings" id="settingsBtn">⚙️</button>
+  <div class="settings-panel" id="settingsPanel">
+    <label>Upload wallpaper <input type="file" id="wallpaperUpload" accept="image/*"></label>
+    <button onclick="removeWallpaper()">Remove wallpaper</button>
+    <label>Engine:
+      <select id="engineSelect">
+        <option value="darkweb">Darkweb</option>
+        <option value="clearnet">Clearnet</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="bg-tiles" aria-hidden>
+    <div class="tile" style="top:4%;right:-8%;width:68vw;height:68vh;border-radius:26px;transform:rotate(-14deg)"></div>
+    <div class="tile" style="top:12%;right:-16%;width:64vw;height:74vh;border-radius:26px;transform:rotate(-10deg)"></div>
+    <div class="tile" style="top:20%;right:-26%;width:72vw;height:80vh;border-radius:26px;transform:rotate(-8deg)"></div>
+  </div>
+
+  <main class="wrap">
+    <div class="card">
+      <div class="quote"></div>
+      <div class="title">TORFIND</div>
+      <div class="search-row">
+        <div class="search">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 19a8 8 0 1 1 6.32-12.9" stroke="#777" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M21 21l-4.3-4.3" stroke="#777" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <input id="query" placeholder="Search Onions and Clearnet" autocomplete="off" onkeydown="if(event.key==='Enter') search()">
+          <button id="clearBtn" class="btn" title="clear">✕</button>
+        </div>
+      </div>
+      <div class="features">
+        <div class="feature">🔒 <span style="opacity:.95">No tracking</span></div>
+        <div class="feature">🕵️ <span style="opacity:.95">Anonymous</span></div>
+        <div class="feature">👪 <span style="opacity:.95">useful</span></div>
+      </div>
+      <div class="descr">Discover Hidden Services and access to Tor's onion sites. We do not store any data and are not liable for the content.</div>
+    </div>
+  </main>
+
+  <script>
+    const body=document.body;
+    const themeBtn=document.getElementById('themeBtn');
+    const settingsBtn=document.getElementById('settingsBtn');
+    const settingsPanel=document.getElementById('settingsPanel');
+    const engineSelect=document.getElementById('engineSelect');
+
+    let engine=localStorage.getItem("engine")||"darkweb";
+    engineSelect.value=engine;
+
+    // Theme toggle
+    function setTheme(t){body.setAttribute('data-theme',t);themeBtn.textContent=t==='dark'?"Switch to Light":"Switch to Dark";localStorage.setItem('tor66-theme',t)}
+    themeBtn.addEventListener('click',()=>setTheme(body.getAttribute('data-theme')==='dark'?'light':'dark'));
+    const saved=localStorage.getItem('tor66-theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    setTheme(saved);
+
+    // Settings toggle
+    settingsBtn.addEventListener('click',()=>{settingsPanel.style.display=settingsPanel.style.display==='block'?'none':'block'});
+
+    // Wallpaper upload
+    const wallpaperUpload=document.getElementById('wallpaperUpload');
+    wallpaperUpload.addEventListener('change',e=>{
+      const file=e.target.files[0];
+      if(!file)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        body.style.backgroundImage=`url(${reader.result})`;
+        body.classList.add('has-wallpaper');
+        localStorage.setItem('wallpaper',reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function removeWallpaper(){body.style.backgroundImage='';body.classList.remove('has-wallpaper');localStorage.removeItem('wallpaper');}
+
+    // Load wallpaper
+    const savedWallpaper=localStorage.getItem('wallpaper');
+    if(savedWallpaper){body.style.backgroundImage=`url(${savedWallpaper})`;body.classList.add('has-wallpaper');}
+
+    // Engine select save
+    engineSelect.addEventListener('change',()=>{engine=engineSelect.value;localStorage.setItem('engine',engine)});
+
+    function search(){
+      const query=document.getElementById("query").value.trim();
+      if(!query)return;
+      let url="";
+      if(engine==="darkweb"){
+        url="https://onionland.io/search?q="+encodeURIComponent(query);
+      }else{
+        url="https://www.metacrawler.com/serp?q="+encodeURIComponent(query);
+      }
+      let newWin=window.open("about:blank");
+      newWin.document.write("<iframe style='border:none;width:100%;height:100%' src='"+url+"'></iframe>");
+    }
+
+    // Clear input
+    document.getElementById('clearBtn').addEventListener('click',()=>{document.getElementById('query').value=''});
+  </script>
+</body>
+</html>
